@@ -1,13 +1,18 @@
 package com.medilabo.patient.model;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
 
 @Entity
-
+@Table(name = "patients")
 public class PatientModel {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer Id;
+
     @NotBlank
     private String firstName;
 
@@ -30,7 +35,8 @@ public class PatientModel {
 // constructeurs
 // ============
 
-    public PatientDto(String firstName, String lastName, LocalDate birthDate, String gender, String adress, String phoneNumber) {
+    public PatientModel(Integer Id, String firstName, String lastName, LocalDate birthDate, String gender, String adress, String phoneNumber) {
+        this.Id = Id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
@@ -43,6 +49,13 @@ public class PatientModel {
 // Getters & Setters
 // ============
 
+    public Integer getId() {
+        return Id;
+    }
+
+    public void setId(Integer Id) {
+        this.Id = Id;
+    }
     public String getFirstName() {
         return firstName;
     }
