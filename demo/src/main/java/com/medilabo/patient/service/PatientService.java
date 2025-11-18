@@ -1,6 +1,6 @@
 package com.medilabo.patient.service;
 
-import com.medilabo.patient.controller.PatientController;
+import com.medilabo.patient.controller.PatientRestController;
 import com.medilabo.patient.model.PatientModel;
 import com.medilabo.patient.repository.PatientRepository;
 import jakarta.validation.Valid;

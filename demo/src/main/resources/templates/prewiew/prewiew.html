@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Historique du patient</title>
+</head>
+<body>
+
+<h1 th:text="'Historique de ' + ${patient.firstName} + ' ' + ${patient.lastName}"></h1>
+
+<h2>Informations patient</h2>
+<ul>
+    <li th:text="'Date de naissance : ' + ${patient.birthDate}"></li>
+    <li th:text="'Sexe : ' + ${patient.gender}"></li>
+    <li th:text="'Adresse : ' + ${patient.adress}"></li>
+    <li th:text="'Téléphone : ' + ${patient.phoneNumber}"></li>
+</ul>
+
+<h2>Historique / Notes</h2>
+
+<div th:if="${#lists.isEmpty(notes)}">
+    <p>Aucune note pour ce patient.</p>
+</div>
+
+<ul th:if="${!#lists.isEmpty(notes)}">
+    <li th:each="note : ${notes}">
+        <strong th:text="${#temporals.format(note.createdAt, 'dd/MM/yyyy HH:mm')}"></strong>
+        <span th:text="' - ' + ${note.author}"></span><br/>
+        <span th:text="${note.content}"></span>
+        <hr/>
+    </li>
+</ul>
+
+<h2>Ajouter une note</h2>
+<form th:action="@{'/patient/' + ${patient.id} + '/history'}" method="post">
+    <textarea name="content" rows="4" cols="60"
+              th:text="${newNoteContent}"></textarea><br/>
+    <button type="submit">Ajouter</button>
+</form>
+
+<p><a th:href="@{/list}">Retour à la liste des patients</a></p>
+
+</body>
+</html>

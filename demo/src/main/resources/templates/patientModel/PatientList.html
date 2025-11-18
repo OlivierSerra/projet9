@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des patients</title>
+</head>
+<body>
+
+<h1>Liste des patients</h1>
+
+<a th:href="@{'/patient/' + ${patient.id} + '/history'}">Historique</a>
+
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Prénom</th>
+        <th>Nom</th>
+        <th>Date de naissance</th>
+        <th>Genre</th>
+        <th>Adresse</th>
+        <th>Téléphone</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="patient : ${PatientModel}">
+        <td th:text="${patient.id}"></td>
+        <td th:text="${patient.firstName}"></td>
+        <td th:text="${patient.lastName}"></td>
+        <td th:text="${patient.birthDate}"></td>
+        <td th:text="${patient.gender}"></td>
+        <td th:text="${patient.adress}"></td>
+        <td th:text="${patient.phoneNumber}"></td>
+
+        <td>
+            <!-- Bouton pour aller à l'historique -->
+            <a th:href="@{'/patient/' + ${patient.id} + '/history'}">Historique</a>
+
+            <!-- Bouton pour modifier -->
+            <a th:href="@{'/update/' + ${patient.id}}">Modifier</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

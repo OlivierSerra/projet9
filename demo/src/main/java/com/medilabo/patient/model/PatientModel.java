@@ -31,6 +31,8 @@ public class    PatientModel {
     @NotBlank
     private String phoneNumber;
 
+
+
 //=============
 // constructeurs
 // ============
@@ -43,6 +45,10 @@ public class    PatientModel {
         this.gender = gender;
         this.adress = adress;
         this.phoneNumber = phoneNumber;
+    }
+
+    public PatientModel(){
+
     }
 
 //=============
