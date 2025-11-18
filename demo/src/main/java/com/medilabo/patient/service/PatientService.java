@@ -14,17 +14,22 @@ public class PatientService {
     private PatientRepository patientRepository;
 
     public PatientService(PatientRepository patientRepository) {
-        this.patientRepository =patientRepository;
+        this.patientRepository = patientRepository;
     }
 
     public List<PatientModel> findAll() {
         return patientRepository.findAll();
     }
 
-    public static void save(@Valid PatientModel patient) {
+    public PatientModel findById(Integer id) {
+        return patientRepository.findById(id).orElse(null);
     }
 
-    public Object findById(Integer id) {
-        return null;
+    public PatientModel save(PatientModel patient) {
+        return patientRepository.save(patient);
+    }
+
+    public void deleteById(Integer id) {
+        patientRepository.deleteById(id);
     }
 }

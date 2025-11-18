@@ -51,7 +51,7 @@ public class PatientController {
         if(result.hasErrors()) {
             return "BindingResult/add";
         }
-        PatientService.save(patient);
+        patientService.save(patient);
         return"redirect:/patientModel/list";
     }
 
