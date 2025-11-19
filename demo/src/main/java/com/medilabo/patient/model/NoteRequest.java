@@ -1,5 +1,7 @@
 package com.medilabo.patient.model;
 
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 public class NoteRequest {
 

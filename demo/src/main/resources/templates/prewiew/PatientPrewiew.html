@@ -32,7 +32,7 @@
 </ul>
 
 <h2>Ajouter une note</h2>
-<form th:action="@{'/patient/' + ${patient.id} + '/history'}" method="post">
+<form th:action="@{'/api/patients/' + ${patient.id} + '/notes'}" method="post">
     <textarea name="content" rows="4" cols="60"
               th:text="${newNoteContent}"></textarea><br/>
     <button type="submit">Ajouter</button>

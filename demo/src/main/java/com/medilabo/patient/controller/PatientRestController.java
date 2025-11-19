@@ -3,128 +3,113 @@ package com.medilabo.patient.controller;
 import com.medilabo.patient.model.NoteRequest;
 import com.medilabo.patient.model.PatientModel;
 import com.medilabo.patient.model.PatientNote;
-import com.medilabo.patient.service.PatientNoteService;
-import jakarta.validation.Valid;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
 import com.medilabo.patient.service.PatientService;
+import com.medilabo.patient.service.PatientNoteService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("") // pas d'espace ici
+@RequestMapping("/patients")
 public class PatientRestController {
 
     private final PatientService patientService;
     private final PatientNoteService patientNoteService;
 
-    public PatientRestController(PatientService patientService, PatientNoteService patientNoteService) {
+    public PatientRestController(PatientService patientService,
+                                 PatientNoteService patientNoteService) {
         this.patientService = patientService;
         this.patientNoteService = patientNoteService;
     }
 
-    // Liste des patients
+    // =======================
+    // LISTE DES PATIENTS
+    // =====================
     @GetMapping
-    public List<PatientModel> getAll() {
+    public List<PatientModel> getAllPatients() {
         return patientService.findAll();
     }
 
-    // Détail d'un patient
+    // =======================
+    // DÉTAIL D'UN PATIENT
+    // =======================
     @GetMapping("/{id}")
-    public PatientModel getById(@PathVariable Integer id) {
-        return patientService.findById(id);
-    }
-
-    // Historique d’un patient
-    @GetMapping("/{id}/notes")
-    public List<PatientNote> getNotes(@PathVariable Integer id) {
-        PatientModel patient = patientService.findById(id);
-        return patientNoteService.getPrewiew(patient);
-    }
-
-    // Ajouter une note
-    @PostMapping("/{id}/notes")
-    public PatientNote addNote(@PathVariable Integer id,
-                               @RequestBody NoteRequest dto) {
-
-        PatientModel patient = patientService.findById(id);
-        return patientNoteService.addNote(patient, dto.getContent(), "Praticien");
-    }
-
-    // =======================
-    // FORMULAIRE D'AJOUT
-    // =======================
-    @GetMapping("/add")
-    public String addPatient(Model model) {
-        // On affiche juste un formulaire vide
-        model.addAttribute("patientModel", new PatientModel());
-        return "patientModel/add";
-    }
-
-    // =======================
-    // VALIDATION FORMULAIRE
-    // =======================
-    @PostMapping("/validate")
-    public String validate(@Valid @ModelAttribute("patientModel") PatientModel patient,
-                           BindingResult result,
-                           Model model) {
-        if (result.hasErrors()) {
-            // on revient sur le formulaire d'ajout
-            return "patientModel/add";
-        }
-        patientService.save(patient);
-        // on revient à la liste
-        return "redirect:/list";
-    }
-
-    // =======================
-    // VUE HISTORIQUE PATIENT
-    // =======================
-    @GetMapping("/patient/{id}/history")
-    public String viewHistory(@PathVariable("id") Integer id, Model model) {
+    public ResponseEntity<PatientModel> getPatientById(@PathVariable Integer id) {
         PatientModel patient = patientService.findById(id);
         if (patient == null) {
-            return "redirect:/list";
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(patient);
+    }
+
+    // =======================
+    // CRÉER UN PATIENT
+    // =======================
+    @PostMapping
+    public ResponseEntity<PatientModel> createPatient(@RequestBody PatientModel patient) {
+        PatientModel saved = patientService.save(patient);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+
+    // =======================
+    // METTRE À JOUR UN PATIENT
+    // =======================
+    @PutMapping("/{id}")
+    public ResponseEntity<PatientModel> updatePatient(@PathVariable Integer id,
+                                                      @RequestBody PatientModel updated) {
+
+        PatientModel existing = patientService.findById(id);
+        if (existing == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        updated.setId(id);
+        PatientModel saved = patientService.save(updated);
+        return ResponseEntity.ok(saved);
+    }
+
+    // =======================
+    // SUPPRIMER UN PATIENT
+    // =======================
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePatient(@PathVariable Integer id) {
+        PatientModel existing = patientService.findById(id);
+        if (existing == null) {
+            return ResponseEntity.notFound().build();
+        }
+        patientService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // =======================
+    // NOTES D'UN PATIENT
+    // =======================
+    @GetMapping("/{id}/notes")
+    public ResponseEntity<List<PatientNote>> getNotes(@PathVariable Integer id) {
+        PatientModel patient = patientService.findById(id);
+        if (patient == null) {
+            return ResponseEntity.notFound().build();
         }
 
         List<PatientNote> notes = patientNoteService.getPrewiew(patient);
-
-        model.addAttribute("patient", patient);
-        model.addAttribute("notes", notes);
-        model.addAttribute("newNoteContent", "");
-
-        return "patientModel/history";
+        return ResponseEntity.ok(notes);
     }
 
     // =======================
-    // AJOUTER À L'HISTORIQUE
+    // AJOUTER UNE NOTE
     // =======================
-    @PostMapping("/patient/{id}/history")
-    public String addNote(@PathVariable("id") Integer id,
-                          @RequestParam("content") String content) {
+    @PostMapping("/{id}/notes")
+    public ResponseEntity<PatientNote> addNote(@PathVariable Integer id,
+                                               @RequestBody NoteRequest dto) {
 
         PatientModel patient = patientService.findById(id);
         if (patient == null) {
-            return "redirect:/list";
+            return ResponseEntity.notFound().build();
         }
 
-        if (content == null || content.trim().isEmpty()) {
-            // on ignore les notes vides pour l'instant
-            return "redirect:/patient/" + id + "/history";
-        }
-
-        patientNoteService.addNote(patient, content, "Praticien");
-
-        return "redirect:/patient/" + id + "/history";
-    }
-
-    // =======================
-    // FORMULAIRE DE MODIF
-    // =======================
-    @GetMapping("/update/{id}")
-    public String modifyForm(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("patientModel", patientService.findById(id));
-        return "patientModel/update";
+        PatientNote savedNote = patientNoteService.addNote(patient, dto.getContent(), "Praticien");
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedNote);
     }
 }

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Historique du patient</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+</head>
+
+<body class="container mt-4">
+
+<h2>Historique du patient</h2>
+
+<!-- Informations du patient -->
+<div class="card p-3 mb-4">
+    <h4 th:text="${patient.firstName + ' ' + patient.lastName}"></h4>
+    <p>Date de naissance : <span th:text="${patient.birthDate}"></span></p>
+    <p>Genre : <span th:text="${patient.gender}"></span></p>
+    <p>Adresse : <span th:text="${patient.adress}"></span></p>
+    <p>Téléphone : <span th:text="${patient.phoneNumber}"></span></p>
+</div>
+
+<!-- Liste des notes -->
+<h4>Notes</h4>
+
+<div th:if="${#lists.isEmpty(notes)}">
+    <p class="text-muted">Aucune note pour ce patient.</p>
+</div>
+
+<ul class="list-group mb-4" th:unless="${#lists.isEmpty(notes)}">
+    <li class="list-group-item" th:each="note : ${notes}">
+        <p th:text="${note.content}"></p>
+        <small class="text-muted">
+            Ajouté par <span th:text="${note.author}"></span> -
+            <span th:text="${note.createdAt}"></span>
+        </small>
+    </li>
+</ul>
+
+<!-- Formulaire d'ajout d'une note -->
+<div class="card p-3">
+    <h5>Ajouter une observation</h5>
+
+    <form th:action="@{'/patient/' + ${patient.id} + '/history'}" method="post">
+
+        <div class="mb-3">
+            <label for="content" class="form-label">Note :</label>
+            <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+        <a th:href="@{/list}" class="btn btn-secondary">Retour à la liste</a>
+    </form>
+</div>
+
+</body>
+</html>

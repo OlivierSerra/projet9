@@ -26,7 +26,7 @@ public class    PatientModel {
     private String gender;
 
     @NotBlank
-    private String adress;
+    private String address;
 
     @NotBlank
     private String phoneNumber;
@@ -37,13 +37,13 @@ public class    PatientModel {
 // constructeurs
 // ============
 
-    public PatientModel(Integer Id, String firstName, String lastName, LocalDate birthDate, String gender, String adress, String phoneNumber) {
+    public PatientModel(Integer Id, String firstName, String lastName, LocalDate birthDate, String gender, String address, String phoneNumber) {
         this.Id = Id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
         this.gender = gender;
-        this.adress = adress;
+        this.address = address;
         this.phoneNumber = phoneNumber;
     }
 
@@ -94,12 +94,12 @@ public class    PatientModel {
         this.gender = gender;
     }
 
-    public String getAdress() {
-        return adress;
+    public String getaddress() {
+        return address;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setaddress(String address) {
+        this.address = address;
     }
 
     public String getPhoneNumber() {
