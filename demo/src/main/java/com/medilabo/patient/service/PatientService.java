@@ -2,7 +2,6 @@ package com.medilabo.patient.service;
 
 import com.medilabo.patient.model.PatientModel;
 import com.medilabo.patient.repository.PatientRepository;
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

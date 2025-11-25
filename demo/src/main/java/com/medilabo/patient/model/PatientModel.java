@@ -1,37 +1,26 @@
 package com.medilabo.patient.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+
+
+import lombok.Getter;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.annotation.Id;
 
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "patients")
-public class    PatientModel {
+@Document(collection = "patients")
+public class PatientModel {
+
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer Id;
 
-    @NotBlank
     private String firstName;
-
-    @NotBlank
     private String lastName;
-
-    @NotBlank
     private LocalDate birthDate;
-
-    @NotBlank
     private String gender;
-
-    @NotBlank
     private String address;
-
-    @NotBlank
     private String phoneNumber;
-
-
 
 //=============
 // constructeurs
@@ -54,10 +43,6 @@ public class    PatientModel {
 //=============
 // Getters & Setters
 // ============
-
-    public Integer getId() {
-        return Id;
-    }
 
     public void setId(Integer Id) {
         this.Id = Id;

@@ -1,10 +1,12 @@
 package com.medilabo.patient.controller;
 
-import com.medilabo.patient.model.NoteRequest;
+import com.medilabo.notes.model.Note;
+import com.medilabo.notes.service.NoteService;
+import com.medilabo.patient.model.NoteClient;
+import com.medilabo.patient.dto.NoteRequest;
 import com.medilabo.patient.model.PatientModel;
-import com.medilabo.patient.model.PatientNote;
+
 import com.medilabo.patient.service.PatientService;
-import com.medilabo.patient.service.PatientNoteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +18,11 @@ import java.util.List;
 public class PatientRestController {
 
     private final PatientService patientService;
-    private final PatientNoteService patientNoteService;
+    private final NoteClient noteClient;
 
-    public PatientRestController(PatientService patientService,
-                                 PatientNoteService patientNoteService) {
+    public PatientRestController(PatientService patientService, NoteClient noteClient) {
         this.patientService = patientService;
-        this.patientNoteService = patientNoteService;
+        this.noteClient = noteClient;
     }
 
     // =======================
@@ -87,13 +88,13 @@ public class PatientRestController {
     // NOTES D'UN PATIENT
     // =======================
     @GetMapping("/{id}/notes")
-    public ResponseEntity<List<PatientNote>> getNotes(@PathVariable Integer id) {
+    public ResponseEntity<List<Note>> getNotes(@PathVariable Integer id) {
         PatientModel patient = patientService.findById(id);
         if (patient == null) {
             return ResponseEntity.notFound().build();
         }
 
-        List<PatientNote> notes = patientNoteService.getPrewiew(patient);
+        List<Note> notes = noteClient.getNotesForPatient(id);
         return ResponseEntity.ok(notes);
     }
 
@@ -101,7 +102,7 @@ public class PatientRestController {
     // AJOUTER UNE NOTE
     // =======================
     @PostMapping("/{id}/notes")
-    public ResponseEntity<PatientNote> addNote(@PathVariable Integer id,
+    public ResponseEntity<Note> addNote(@PathVariable Integer id,
                                                @RequestBody NoteRequest dto) {
 
         PatientModel patient = patientService.findById(id);
@@ -109,7 +110,7 @@ public class PatientRestController {
             return ResponseEntity.notFound().build();
         }
 
-        PatientNote savedNote = patientNoteService.addNote(patient, dto.getContent(), "Praticien");
+        Note savedNote = noteClient.addNote(id, dto.getContent());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedNote);
     }
 }
