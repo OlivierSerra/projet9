@@ -13,9 +13,12 @@ import java.util.List;
 public class NoteClient {
 
     private final RestTemplate restTemplate;
+    //noteServiceBaseUrl = http://localhost:8082 (stké dans application properties
+    //utile dans Docker pour perter l'application -/ pas de code den dure
     private final String noteServiceBaseUrl;
 
     public NoteClient(RestTemplate restTemplate,
+                      //intéreêt our Docker notes.service.url dans application.properties donc facile à cjanger pour le déploiement
                       @Value("${notes.service.url:http://localhost:8082}") String noteServiceBaseUrl) {
         this.restTemplate = restTemplate;
         this.noteServiceBaseUrl = noteServiceBaseUrl;
