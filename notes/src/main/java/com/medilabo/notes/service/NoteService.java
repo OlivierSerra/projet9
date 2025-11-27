@@ -19,7 +19,7 @@ public class NoteService {
         this.repo = repo;
     }
 
-    public List<Note> getNotes(Integer patientId) {
+    public List<Note> getNotes(String patientId) {
         return repo.findByPatientId(patientId);
     }
 

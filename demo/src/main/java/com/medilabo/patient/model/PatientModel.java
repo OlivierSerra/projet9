@@ -1,7 +1,5 @@
 package com.medilabo.patient.model;
 
-
-
 import lombok.Getter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
@@ -13,10 +11,10 @@ public class PatientModel {
 
 
     @Id
-    private Integer Id;
+    private String id;
 
-    private String firstName;
     private String lastName;
+    private String firstName;
     private LocalDate birthDate;
     private String gender;
     private String address;
@@ -26,16 +24,17 @@ public class PatientModel {
 // constructeurs
 // ============
 
-    public PatientModel(Integer Id, String firstName, String lastName, LocalDate birthDate, String gender, String address, String phoneNumber) {
-        this.Id = Id;
-        this.firstName = firstName;
+    public PatientModel(String Id, String lastName, String firstName , LocalDate birthDate, String gender, String address, String phoneNumber) {
+        this.id = id;
         this.lastName = lastName;
+        this.firstName = firstName;
         this.birthDate = birthDate;
         this.gender = gender;
         this.address = address;
         this.phoneNumber = phoneNumber;
     }
 
+    //Constructeur
     public PatientModel(){
 
     }
@@ -44,9 +43,14 @@ public class PatientModel {
 // Getters & Setters
 // ============
 
-    public void setId(Integer Id) {
-        this.Id = Id;
+    public String getId() {
+        return id;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getFirstName() {
         return firstName;
     }

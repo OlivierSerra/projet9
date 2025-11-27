@@ -1,0 +1,14 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: risk-service
+
+patients:
+  service:
+    url: http://localhost:8081
+
+notes:
+  service:
+    url: http://localhost:8082

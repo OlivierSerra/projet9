@@ -38,7 +38,7 @@ public class NoteController {
 
 
     @GetMapping("/{patientId}")
-    public ResponseEntity<List<Note>> getNotes(@PathVariable Integer patientId) {
+    public ResponseEntity<List<Note>> getNotes(@PathVariable String patientId) {
         List<Note> notes = service.getNotes(patientId);
         return ResponseEntity.ok(notes);
     }
@@ -67,6 +67,8 @@ public class NoteController {
 }
 
     /*
+
+
     @PostMapping("/{id}")
     public String updateNotes(@PathVariable("id") String id, @Valid Note note,
                             BindingResult result, Model model) {

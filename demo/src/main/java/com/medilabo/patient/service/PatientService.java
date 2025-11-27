@@ -21,17 +21,22 @@ public class PatientService {
         return patientRepository.findAll();
     }
 
-    public PatientModel findById(Integer id) {
+    public PatientModel findById(String id) {
 
         return patientRepository.findById(id).orElse(null);
     }
 
-    public PatientModel save(PatientModel patient) {
+    public PatientModel findByNames(String lastName, String firstName) {
+        return patientRepository
+                .findByLastNameAndFirstName(lastName, firstName)
+                .orElse(null);
+    }
 
+    public PatientModel save(PatientModel patient) {
         return patientRepository.save(patient);
     }
 
-    public void deleteById(Integer id) {
+    public void deleteById(String id) {
 
         patientRepository.deleteById(id);
     }
