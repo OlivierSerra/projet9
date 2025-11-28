@@ -36,7 +36,6 @@ public class NoteController {
         return ResponseEntity.ok(notes);
     }
 
-
     @GetMapping("/{patientId}")
     public ResponseEntity<List<Note>> getNotes(@PathVariable String patientId) {
         List<Note> notes = service.getNotes(patientId);

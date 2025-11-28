@@ -9,7 +9,7 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
-
+// fichier de config de secu (P7)
     @Bean
     public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
 

@@ -2,6 +2,7 @@ package com.medilabo.patient.dto;
 
 import java.time.LocalDateTime;
 
+//envoi de data vers le user
 public class NoteDto {
 
     private String id;

@@ -20,6 +20,7 @@ public class RiskService {
         private final String noteServiceUrl;
 
         // liste des termes déclencheurs en dur, pas de BDD
+        //cherche mots dans chaîne de caractères => besoin d’une liste de chaînes non constantes.
         private static final List<String> TRIGGERS = List.of(
                 "hémoglobine a1c", "microalbumine", "taille", "poids",
                 "fumeur", "fumeuse", "anormal", "cholestérol",
@@ -107,18 +108,18 @@ public class RiskService {
             }
 
             if (age > 30) {
-                if (triggers >= 8) return RiskLevel.EARLY_ONSET;
-                if (triggers >= 6) return RiskLevel.IN_DANGER;
+                if (triggers >= 8) return RiskLevel.EARLYONSET;
+                if (triggers >= 6) return RiskLevel.INDANGER;
                 if (triggers >= 2 && triggers <= 5) return RiskLevel.BORDERLINE;
                 return RiskLevel.NONE;
             } else {
                 // moins de 30 ans
                 if (isMale) {
-                    if (triggers >= 5) return RiskLevel.EARLY_ONSET;
-                    if (triggers >= 3) return RiskLevel.IN_DANGER;
+                    if (triggers >= 5) return RiskLevel.EARLYONSET;
+                    if (triggers >= 3) return RiskLevel.INDANGER;
                 } else if (isFemale) {
-                    if (triggers >= 7) return RiskLevel.EARLY_ONSET;
-                    if (triggers >= 4) return RiskLevel.IN_DANGER;
+                    if (triggers >= 7) return RiskLevel.EARLYONSET;
+                    if (triggers >= 4) return RiskLevel.INDANGER;
                 }
                 return RiskLevel.NONE;
             }

@@ -43,5 +43,10 @@
                 }
                 return ResponseEntity.ok(result);
             }
+
+            @GetMapping
+            public String riskGateway() {
+                return "Risk service is working";
+            }
         }
 

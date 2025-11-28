@@ -14,7 +14,9 @@ import java.util.List;
 public class NoteClient {
 
     private final RestTemplate restTemplate;
-    //noteServiceBaseUrl = http://localhost:8081 (stké dans application properties
+    //RestTRamplates pour appeler le microservice "notes"
+    // http://localhost:8081 POUR LES PATIENTS
+    //notes.service.url = http://localhost:8082 pour les notes
     //utile dans Docker pour perter l'application -/ pas de code den dure
     private final String noteServiceBaseUrl;
 
