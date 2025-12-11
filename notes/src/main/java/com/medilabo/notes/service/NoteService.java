@@ -19,7 +19,7 @@ public class NoteService {
         this.repo = repo;
     }
 
-    public List<Note> getNotes(String patientId) {
+    public List<Note> getNotes(Long patientId) {
         return repo.findByPatientId(patientId);
     }
 
@@ -43,16 +43,17 @@ public class NoteService {
         return repo.save(b);
     }
 
-    public Optional<Note> findById(String id) {
-        return repo.findById(id);
+    public Note getNoteById(String id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Note non trouvée : " + id));
     }
 
-    public Note updateNote(String id, Note note) {
+    public Note updateNote(String id, Note updated) {
         Note existing = repo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Note not found: " + id));
-        existing.setPatientId(note.getPatientId());
-        existing.setPatient(note.getPatient());
-        existing.setNote(note.getNote());
+        existing.setPatientId(updated.getPatientId());
+        existing.setPatient(updated.getPatient());
+        existing.setNote(updated.getNote());
         repo.save(existing);
         return existing;
     }

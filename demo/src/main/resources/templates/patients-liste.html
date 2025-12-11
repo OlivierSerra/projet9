@@ -8,8 +8,9 @@
 
 <h1>Liste des patients</h1>
 
-<a th:href="@{'/patient/' + ${patient.id} + '/history'}">Historique</a>
-
+<p>
+    <a th:href="@{/patients/ui/ajouter}">➕ Ajouter un patient</a>
+</p>
 
 <table border="1">
     <thead>
@@ -26,33 +27,33 @@
     </thead>
 
     <tbody>
-    <tr th:each="patient : ${PatientModel}">
+    <tr th:each="patient : ${patients}">
         <td th:text="${patient.id}"></td>
         <td th:text="${patient.firstName}"></td>
         <td th:text="${patient.lastName}"></td>
-        <td th:text="${patient.birthDate}"></td>
+        <td th:text="${#temporals.format(patient.birthDate, 'MM/dd/yyyy')}"></td>
         <td th:text="${patient.gender}"></td>
-        <td th:text="${patient.adress}"></td>
+        <td th:text="${patient.address}"></td>
         <td th:text="${patient.phoneNumber}"></td>
 
-        <td>
-            <!-- Bouton voir historique -->
-            <a th:href="@{'/patient/' + ${patient.id} + '/history'}"
-               class="btn btn-info btn-sm me-1">
-                Voir historique
-            </a>
-
-            <!-- Bouton modifier -->
-            <a th:href="@{'/update/' + ${patient.id}}"
-               class="btn btn-warning btn-sm me-1">
+        <td>&nbsp;
+            <!-- Modifier -->
+            <a th:href="@{'/patients/ui/modifier/' + ${patient.id}}">
                 Modifier
             </a>
+            &nbsp;|&nbsp;
 
-            <!-- Bouton supprimer -->
-            <a th:href="@{'/delete/' + ${patient.id}}"
-               class="btn btn-danger btn-sm">
+            <!-- Supprimer -->
+            <a th:href="@{'/patients/ui/supprimer/' + ${patient.id}}">
                 Supprimer
             </a>
+            |&nbsp;
+
+            <!-- notes -->
+            <a th:href="@{'/notes/ui/patient/' + ${patient.id}}">
+                notes
+            </a>
+            &nbsp;
         </td>
     </tr>
     </tbody>

@@ -1,0 +1,105 @@
+version: "3.9"
+
+services:
+
+  # -------------------------
+  # MYSQL (Patients DB)
+  # -------------------------
+  mysqldb:
+    image: mysql:8
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mysqldb          # <— même nom que dans application-docker.yaml
+    ports:
+      - "3307:3306"                    # host:3307 -> container:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - medilabo-net
+
+  # -------------------------
+  # MongoDB (Notes & Risk DB)
+  # -------------------------
+  mongodb:
+    image: mongo:8.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - medilabo-net
+
+  # -------------------------
+  # Patient Service (SQL)
+  # -------------------------
+  patientservice:
+    build: ./demo
+    container_name: patientservice
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - mysqldb
+    networks:
+      - medilabo-net
+    ports:
+      - "8081:8081"
+    restart: on-failure
+
+
+  # -------------------------
+  # Notes Service (MongoDB)
+  # -------------------------
+  noteservice:
+    build: ./notes
+    container_name: noteservice
+    depends_on:
+      - mongodb
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8082:8082"
+    networks:
+      - medilabo-net
+
+  # -------------------------
+  # Risk Service (MongoDB + appels HTTP vers patients/notes)
+  # -------------------------
+  riskservice:
+    build: ./riskservice
+    container_name: riskservice
+    depends_on:
+      - mongodb
+      - patientservice
+      - noteservice
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8083:8083"
+    networks:
+      - medilabo-net
+
+  # -------------------------
+  # Gateway
+  # -------------------------
+  gateway:
+    build: ./gateway
+    container_name: gateway
+    depends_on:
+      - patientservice
+      - noteservice
+      - riskservice
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8090:8090"
+    networks:
+      - medilabo-net
+
+networks:
+  medilabo-net:
+
+volumes:
+  mysql_data:
+  mongo_data:

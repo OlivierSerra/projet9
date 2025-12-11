@@ -1,31 +1,40 @@
 package com.medilabo.patient.model;
 
-import lombok.Getter;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-@Document(collection = "patients")
+@Entity
+@Table(name = "patients")
 public class PatientModel {
 
-
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;//pour avoir un ID en 1-2-3 et non 37f329e2****
 
     private String lastName;
     private String firstName;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
     private String gender;
     private String address;
     private String phoneNumber;
 
-//=============
-// constructeurs
-// ============
+    // ======================
+    //CONSTRUCTEURS
+    // ============================
 
-    public PatientModel(String Id, String lastName, String firstName , LocalDate birthDate, String gender, String address, String phoneNumber) {
-        this.id = id;
+    public PatientModel() {
+    }
+
+    public PatientModel(String lastName,
+                        String firstName,
+                        LocalDate birthDate,
+                        String gender,
+                        String address,
+                        String phoneNumber) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.birthDate = birthDate;
@@ -34,29 +43,16 @@ public class PatientModel {
         this.phoneNumber = phoneNumber;
     }
 
-    //Constructeur
-    public PatientModel(){
+    // ============================
+    // GETTERS & SETTERS
+    // ==========================
 
-    }
-
-//=============
-// Getters & Setters
-// ============
-
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
     }
 
     public String getLastName() {
@@ -65,6 +61,14 @@ public class PatientModel {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public LocalDate getBirthDate() {
@@ -83,11 +87,11 @@ public class PatientModel {
         this.gender = gender;
     }
 
-    public String getaddress() {
+    public String getAddress() {
         return address;
     }
 
-    public void setaddress(String address) {
+    public void setAddress(String address) {
         this.address = address;
     }
 
@@ -98,5 +102,4 @@ public class PatientModel {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-
 }

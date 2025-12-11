@@ -8,7 +8,7 @@ public class NoteDto {
     private String id;
     private String patientId;
     private String patient;
-    private String note;          // le texte de la note
+    private String note;
 
 
     public NoteDto() {}

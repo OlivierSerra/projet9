@@ -10,8 +10,7 @@ public class Note {
 
     @Id
     private String id;
-
-    private Integer patientId;
+    private Long patientId;
     private String patient;
     private String note;
 
@@ -22,7 +21,7 @@ public class Note {
     public Note() {
     }
 
-    public Note(Integer patientId, String patient, String note) {
+    public Note(Long patientId, String patient, String note) {
         this.patientId = patientId;
         this.patient = patient;
         this.note = note;
@@ -37,11 +36,11 @@ public class Note {
         this.id = id;
     }
 
-    public Integer getPatientId() {
+    public Long getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(Integer patientId) {
+    public void setPatientId(Long patientId) {
         this.patientId = patientId;
     }
 

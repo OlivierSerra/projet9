@@ -27,13 +27,13 @@ public class NoteClient {
         this.noteServiceBaseUrl = noteServiceBaseUrl;
     }
 
-    public List<NoteDto> getNotesForPatient(String patientId) {
+    public List<NoteDto> getNotesForPatient(Long patientId) {
         String url = noteServiceBaseUrl + "/notes/patient/" + patientId;
         NoteDto[] response = restTemplate.getForObject(url, NoteDto[].class);
         return response != null ? Arrays.asList(response) : List.of();
     }
 
-    public NoteDto addNote(String patientId, String content) {
+    public NoteDto addNote(Long patientId, String content) {
         NoteRequest request = new NoteRequest();
         request.setPatientId(patientId);
         request.setContent(content);

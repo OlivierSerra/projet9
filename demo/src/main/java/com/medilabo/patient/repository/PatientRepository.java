@@ -1,13 +1,12 @@
-package com.medilabo.patient.repository;
+    package com.medilabo.patient.repository;
 
-import com.medilabo.patient.model.PatientModel;
+    import com.medilabo.patient.model.PatientModel;
+    import org.springframework.data.jpa.repository.JpaRepository;
+    import org.springframework.stereotype.Repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+    import java.util.Optional;
 
-import java.util.List;
-import java.util.Optional;
-
-public interface PatientRepository extends MongoRepository<PatientModel, String> {
-    Optional<PatientModel> findByLastNameAndFirstName(String lastName, String firstName);
-}
-
+    @Repository
+    public interface PatientRepository extends JpaRepository<PatientModel, Long> {
+        Optional<PatientModel> findByLastNameAndFirstName(String lastName, String firstName);
+    }

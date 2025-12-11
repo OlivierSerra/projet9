@@ -36,7 +36,7 @@ public class PatientRestController {
     // DÉTAIL D'UN PATIENT
     // =======================
     @GetMapping("/{id}")
-    public ResponseEntity<PatientModel> getPatientById(@PathVariable String id) {
+    public ResponseEntity<PatientModel> getPatientById(@PathVariable Long id) {
         PatientModel patient = patientService.findById(id);
         if (patient == null) {
             return ResponseEntity.notFound().build();
@@ -66,11 +66,11 @@ public class PatientRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    // =======================
+    // ====================
     // METTRE À JOUR UN PATIENT
     // =======================
     @PutMapping("/{id}")
-    public ResponseEntity<PatientModel> updatePatient(@PathVariable String id,
+    public ResponseEntity<PatientModel> updatePatient(@PathVariable Long id ,
                                                       @RequestBody PatientModel updated) {
 
         PatientModel existing = patientService.findById(id);
@@ -85,9 +85,9 @@ public class PatientRestController {
 
     // =======================
     // SUPPRIMER UN PATIENT
-    // =======================
+    // ======================
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePatient(@PathVariable String id) {
+    public ResponseEntity<Void> deletePatient(@PathVariable Long id ) {
         PatientModel existing = patientService.findById(id);
         if (existing == null) {
             return ResponseEntity.notFound().build();
@@ -100,7 +100,7 @@ public class PatientRestController {
     // NOTES D'UN PATIENT
     // =======================
     @GetMapping("/{id}/notes")
-    public ResponseEntity<List<NoteDto>> getNotes(@PathVariable String id) {
+    public ResponseEntity<List<NoteDto>> getNotes(@PathVariable Long id ) {
         PatientModel patient = patientService.findById(id);
         if (patient == null) {
             return ResponseEntity.notFound().build();
@@ -114,7 +114,7 @@ public class PatientRestController {
     // AJOUTER UNE NOTE
     // =======================
     @PostMapping("/{id}/notes")
-    public ResponseEntity<NoteDto> addNote(@PathVariable String id,
+    public ResponseEntity<NoteDto> addNote(@PathVariable Long id ,
                                         @RequestBody NoteRequest dto) {
 
         PatientModel patient = patientService.findById(id);
@@ -122,7 +122,7 @@ public class PatientRestController {
             return ResponseEntity.notFound().build();
         }
 
-        NoteDto savedNote = noteClient.addNote(id, dto.getContent());
+        NoteDto savedNote = noteClient.addNote(dto.getPatientId(), dto.getContent());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedNote);
     }
 

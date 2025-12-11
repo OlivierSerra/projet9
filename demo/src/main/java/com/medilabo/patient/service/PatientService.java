@@ -21,7 +21,7 @@ public class PatientService {
         return patientRepository.findAll();
     }
 
-    public PatientModel findById(String id) {
+    public PatientModel findById(Long id) {
 
         return patientRepository.findById(id).orElse(null);
     }
@@ -36,7 +36,7 @@ public class PatientService {
         return patientRepository.save(patient);
     }
 
-    public void deleteById(String id) {
+    public void deleteById(Long id) {
 
         patientRepository.deleteById(id);
     }

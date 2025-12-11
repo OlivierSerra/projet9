@@ -1,32 +1,25 @@
-package com.medilabo.RiskService.model;
+package com.medilabo.RiskService.dto;
 
 import java.time.LocalDate;
 
-public class PatientDto
-{
-
+public class PatientDto {
     private String id;
-    private String firstName;
     private String lastName;
+    private String firstName;
     private LocalDate birthDate;
     private String gender;
     private String address;
     private String phoneNumber;
 
-    //Constructeur
-    public PatientDto(){
-
-    }
-
-    // getters & setters
+    // Getters & setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-
     public String getLastName() { return lastName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
+
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
 
     public LocalDate getBirthDate() { return birthDate; }
     public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
@@ -34,19 +27,9 @@ public class PatientDto
     public String getGender() { return gender; }
     public void setGender(String gender) { this.gender = gender; }
 
-    public String getAddress() {
-        return address;
-    }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 }

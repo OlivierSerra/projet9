@@ -1,128 +1,202 @@
 package com.medilabo.RiskService.service;
 
-import com.medilabo.RiskService.model.*;
-import org.springframework.beans.factory.annotation.Value;
+import com.medilabo.RiskService.client.NoteClient;
+import com.medilabo.RiskService.client.PatientClient;
+import com.medilabo.RiskService.dto.*;
+import com.medilabo.RiskService.model.RiskLevel;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 
 
 @Service
 public class RiskService {
 
-        private final RestTemplate restTemplate;
-        private final String patientServiceUrl;
-        private final String noteServiceUrl;
+    private final PatientClient patientClient;
+    private final NoteClient noteClient;
 
-        // liste des termes déclencheurs en dur, pas de BDD
-        //cherche mots dans chaîne de caractères => besoin d’une liste de chaînes non constantes.
-        private static final List<String> TRIGGERS = List.of(
-                "hémoglobine a1c", "microalbumine", "taille", "poids",
-                "fumeur", "fumeuse", "anormal", "cholestérol",
-                "vertiges", "rechute", "réaction", "anticorps"
+    private static final List<String> TRIGGERS = List.of(
+            "HEMOGLOBINE A1C",
+            "MICROALBUMINE",
+            "TAILLE",
+            "POIDS",
+            "FUMEUR",
+            "FUMEUSE",
+            "ANORMAL",
+            "CHOLESTEROL",
+            "VERTIGES",
+            "RECHUTE",
+            "REACTION",
+            "ANTICORPS"
+    );
+
+    public RiskService(PatientClient patientClient, NoteClient noteClient) {
+        this.patientClient = patientClient;
+        this.noteClient = noteClient;
+    }
+
+    public RiskReportDto assessRisk(Long patientId) {
+
+        PatientDto patient = patientClient.getPatientById(patientId);
+        if (patient == null) {
+            throw new RuntimeException("Patient not found with id " + patientId);
+        }
+
+        List<NoteDto> notes = noteClient.getNotesForPatient(patientId);
+        if (notes == null) {
+            notes = List.of();
+        }
+
+        int triggers = countTriggers(notes);
+        RiskLevel level = calculateRiskLevel(patient, triggers);
+
+        //Construction du DTO de réponse
+        RiskReportDto dto = new RiskReportDto();
+        dto.setPatientId(patient.getId());
+        dto.setLastName(patient.getLastName());
+        dto.setFirstName(patient.getFirstName());
+        dto.setBirthDate(patient.getBirthDate());
+        dto.setGender(patient.getGender());
+        dto.setTriggerCount(triggers);
+        dto.setRiskLevel(level);
+
+        dto.setNotesExtracts(
+                notes.stream()
+                        .map(NoteDto::getNote)
+                        .collect(Collectors.toList())
         );
 
-        public RiskService(RestTemplate restTemplate,
-                                     @Value("${patients.service.url}") String patientServiceUrl,
-                                     @Value("${notes.service.url}") String noteServiceUrl) {
-            this.restTemplate = restTemplate;
-            this.patientServiceUrl = patientServiceUrl;
-            this.noteServiceUrl = noteServiceUrl;
-        }
-
-        public RiskResult assess(String patientId) {
-
-            // 1) récupérer le patient
-            String patientUrl = patientServiceUrl + "/patients/" + patientId;
-            PatientDto patient = restTemplate.getForObject(patientUrl, PatientDto.class);
-            if (patient == null) {
-                return null;
-            }
-
-            // 2) récupérer les notes du patient
-            String notesUrl = noteServiceUrl + "/notes/" + patientId;
-            NoteDto[] notesArray = restTemplate.getForObject(notesUrl, NoteDto[].class);
-            List<NoteDto> notes = notesArray != null ? Arrays.asList(notesArray) : List.of();
-
-            // 3) compter les déclencheurs
-            int triggersCount = countTriggers(notes);
-
-            // 4) calculer l’âge
-            int age = Period.between(patient.getBirthDate(), LocalDate.now()).getYears();
-
-            // 5) calculer le niveau de risque
-            RiskLevel level = computeRiskLevel(age, patient.getGender(), triggersCount);
-
-            // 6) construire la réponse JSON
-            RiskResult result = new RiskResult();
-            result.setPatientId(patientId);
-            result.setFirstName(patient.getFirstName());
-            result.setLastName(patient.getLastName());
-            result.setAge(age);
-            result.setRisk(level);
-            result.setTriggersCount(triggersCount);
-
-            return result;
-        }
-
-       public RiskResult assessRiskByNames(String lastName, String firstName) {
-
-        // 1) Appeler le microservice patient pour récupérer le patient par nom/prénom
-        String url = patientServiceUrl + "/patients/search?lastName=" + lastName + "&firstName=" + firstName;
-        PatientDto patient = restTemplate.getForObject(url, PatientDto.class);
-
-        if (patient == null || patient.getId() == null) {
-            return null;
-        }
-
-        // 2) Réutiliser la logique existante basée sur l'id
-        return assess(patient.getId());
+        return dto;
     }
 
-        private int countTriggers(List<NoteDto> notes) {
-            int count = 0;
-
-            for (NoteDto note : notes) {
-                if (note.getContent() == null) continue;
-                String lower = note.getContent().toLowerCase(Locale.ROOT);
-                for (String trigger : TRIGGERS) {
-                    if (lower.contains(trigger.toLowerCase(Locale.ROOT))) {
-                        count++;
-                    }
-                }
-            }
-            return count;
+    //definition de countTriggers
+    private int countTriggers(List<NoteDto> notes) {
+        if (notes == null || notes.isEmpty()) {
+            return 0;
         }
+        String allNotes = notes.stream()
+                .map(NoteDto::getNote)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(" "));
 
-        private RiskLevel computeRiskLevel(int age, String gender, int triggers) {
-            boolean isMale = gender != null && gender.equalsIgnoreCase("M");
-            boolean isFemale = gender != null && gender.equalsIgnoreCase("F");
+        String normalizedNotes= normalisedText(allNotes);
 
-            if (triggers == 0) {
-                return RiskLevel.NONE;
+        int count = 0;
+        for (String trigger : TRIGGERS) {
+            if (normalizedNotes.contains(trigger)) {
+                count++;
             }
+        }
+        return count;
+    }
 
-            if (age > 30) {
-                if (triggers >= 8) return RiskLevel.EARLYONSET;
-                if (triggers >= 6) return RiskLevel.INDANGER;
-                if (triggers >= 2 && triggers <= 5) return RiskLevel.BORDERLINE;
-                return RiskLevel.NONE;
+    //normaliser l'enr des entrées afin de les comparer à la liste
+    private String normalisedText( String text) {
+        if (text == null){
+            return" ";
+        }
+        return text.toUpperCase();
+    }
+
+    //calcul du niveau de risque en fonction de l'âge+genre+declencheurs
+    private RiskLevel calculateRiskLevel(PatientDto patient, int triggerCount) {
+        if (triggerCount == 0) {
+            return RiskLevel.NONE;
+        }
+        int age = calculateAge(patient.getBirthDate());
+        String patientGender = patient.getGender();
+
+        if (age > 30) {
+            if (triggerCount >= 8) {
+                return RiskLevel.EARLYONSET;
+            } else if (triggerCount >= 6) {
+                return RiskLevel.INDANGER;
+            } else if (triggerCount >= 2 && triggerCount <= 5) {
+                return RiskLevel.BORDERLINE;
             } else {
-                // moins de 30 ans
-                if (isMale) {
-                    if (triggers >= 5) return RiskLevel.EARLYONSET;
-                    if (triggers >= 3) return RiskLevel.INDANGER;
-                } else if (isFemale) {
-                    if (triggers >= 7) return RiskLevel.EARLYONSET;
-                    if (triggers >= 4) return RiskLevel.INDANGER;
-                }
                 return RiskLevel.NONE;
             }
         }
+
+        if (age <30) {
+            if ("M".equals(patientGender)) {
+                if (triggerCount >= 5) {
+                    return RiskLevel.EARLYONSET;
+                } else if (triggerCount >= 3) {
+                    return RiskLevel.INDANGER;
+                } else {
+                    return RiskLevel.NONE;
+                }
+            } else if ("F".equals(patientGender)){
+                if (triggerCount >= 7) {
+                    return RiskLevel.EARLYONSET;
+                } else if (triggerCount >= 4) {
+                    return RiskLevel.INDANGER;
+                } else {
+                    return RiskLevel.NONE;
+                }
+            } else {
+                return RiskLevel.NONE;
+            }
+        }
+        return RiskLevel.NONE;
+
     }
 
+    private int calculateAge(LocalDate birthDate) {
+        if (birthDate == null) {
+            return 0;
+        }
+        return Period.between(birthDate, LocalDate.now()).getYears();
+    }
+}
+
+        /*Compter le nombre de déclencheurs trouvés.
+        //Si count == 0 → None
+        if (count == 0) {
+            risk == null;
+        }
+
+        if (age > 30) {
+            if (count > 2 && count < 5) {
+                risk == Borderline
+            } ;
+            if (count > 6 && count < 7) {
+                riske == In Danger
+            } ;
+            if (count > 8) {
+                risk == Early onset
+            } ;
+        }
+
+        if ((age < 30) && (gender == M)) {
+            if (count >= 5) {
+                risk == Early onset
+            } ;
+            if (count >= 3) {
+                risk == In Danger
+            } ;
+            if (count > 6 && count < 7) {
+                risk == In Danger
+            } ;
+            if (count > 8) {
+                risk == Early onset
+            } ;
+        }
+
+        if ((age < 30) && (gender == F)) {
+            if (count >= 7) {
+                risk == Early onset
+            } ;
+            if (count >= 4) {
+                risk == In Danger
+            } ;
+        }
+        elseIf risk = null;
+    }
+*/
