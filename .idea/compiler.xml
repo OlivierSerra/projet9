@@ -7,18 +7,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="gateway" />
+        <module name="frontService" />
       </profile>
-      <profile name="Annotation profile for notes" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
-        </processorPath>
-        <module name="notes" />
-      </profile>
-      <profile name="Annotation profile for MediLabo" enabled="true">
+      <profile name="Annotation profile for projet9" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -27,6 +18,7 @@
         </processorPath>
         <module name="demo" />
         <module name="RiskService" />
+        <module name="notes" />
       </profile>
     </annotationProcessing>
   </component>
@@ -34,6 +26,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="RiskService" options="-parameters" />
       <module name="demo" options="-parameters" />
+      <module name="frontService" options="-parameters" />
       <module name="gateway" options="-parameters" />
       <module name="notes" options="-parameters" />
     </option>

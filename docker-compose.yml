@@ -1,58 +1,47 @@
-version: "3.9"
-
 services:
 
-  # -------------------------
-  # MYSQL (Patients DB)
-  # -------------------------
   mysqldb:
     image: mysql:8
     container_name: mysqldb
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: mysqldb          # <— même nom que dans application-docker.yaml
+      MYSQL_DATABASE: mysqldb
     ports:
-      - "3307:3306"                    # host:3307 -> container:3306
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - medilabo-net
 
-  # -------------------------
-  # MongoDB (Notes & Risk DB)
-  # -------------------------
   mongodb:
     image: mongo:8.0
     container_name: mongodb
     ports:
       - "27017:27017"
     volumes:
-      - mongo_data:/data/db
+      - mongo_notes_data:/data/db
     networks:
       - medilabo-net
 
-  # -------------------------
-  # Patient Service (SQL)
-  # -------------------------
   patientservice:
-    build: ./demo
+    build:
+      context: .
+      dockerfile: demo/Dockerfile
     container_name: patientservice
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - mysqldb
-    networks:
-      - medilabo-net
     ports:
       - "8081:8081"
+    networks:
+      - medilabo-net
     restart: on-failure
 
-
-  # -------------------------
-  # Notes Service (MongoDB)
-  # -------------------------
   noteservice:
-    build: ./notes
+    build:
+      context: .
+      dockerfile: notes/Dockerfile
     container_name: noteservice
     depends_on:
       - mongodb
@@ -63,11 +52,10 @@ services:
     networks:
       - medilabo-net
 
-  # -------------------------
-  # Risk Service (MongoDB + appels HTTP vers patients/notes)
-  # -------------------------
   riskservice:
-    build: ./riskservice
+    build:
+      context: .
+      dockerfile: riskService/Dockerfile
     container_name: riskservice
     depends_on:
       - mongodb
@@ -80,11 +68,10 @@ services:
     networks:
       - medilabo-net
 
-  # -------------------------
-  # Gateway
-  # -------------------------
   gateway:
-    build: ./gateway
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
     container_name: gateway
     depends_on:
       - patientservice
@@ -97,9 +84,26 @@ services:
     networks:
       - medilabo-net
 
+  frontservice:
+    build:
+      context: .
+      dockerfile: frontservice/Dockerfile
+    container_name: frontservice
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - patientservice
+      - noteservice
+      - riskservice
+      - gateway
+    ports:
+      - "8084:8080"
+    networks:
+      - medilabo-net
+
 networks:
   medilabo-net:
 
 volumes:
   mysql_data:
-  mongo_data:
+  mongo_notes_data:

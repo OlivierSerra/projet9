@@ -8,11 +8,15 @@
 
 <h1>Modifier un patient</h1>
 
+<a th:href="@{'/patients/ui/detail/' + ${patient.id}}">
+    Voir risque
+</a>
+
 <p>
-    <a th:href="@{/patients/liste}">⬅ Retour à la liste</a>
+    <a th:href="@{/patients/ui/liste}">⬅ Retour à la liste</a>
 </p>
 
-<form th:action="@{'/patients/modifier/' + ${patient.id}}" th:object="${patient}" method="post">
+<form th:action="@{'/patients/ui/modifier/' + ${patient.id}}" th:object="${patient}" method="post">
     <div>
         <label>Nom :</label>
         <input type="text" th:field="*{lastName}">

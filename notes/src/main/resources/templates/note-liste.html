@@ -9,18 +9,18 @@
 <h1>Notes du patient <span th:text="${patientId}"></span></h1>
 
 <p>
-  <a th:href="@{/patients/ui/liste}">⬅ Retour aux patients</a>
+  <a th:href="@{/patients/ui/liste}"> Retour aux patients</a>
 </p>
 
 <p>
-  <a th:href="@{'/notes/ui/ajouter/' + ${patientId}}">➕ Ajouter une note</a>
+  <a th:href="@{/notes/ui/ajouter/{patientId}(patientId=${patientId})}"> Ajouter une note</a>
 </p>
 
 <table border = "1">
   <thead>
   <tr>
-    <th>PatientID</th>
-    <th>Patient</th>
+    <th>Note ID</th>
+    <th>Patient ID</th>
     <th>note</th>
     <th>Actions</th>
   </tr>
@@ -29,15 +29,15 @@
   <tbody>
   <tr th:each="note : ${notes}">
     <td th:text="${note.id}"></td>
+    <td th:text="${note.patientId}"></td>
     <td th:text="${note.note}"></td>
     <td>
-      <a th:href="@{'/notes/ui/modifier/' + ${note.id}}">Modifier</a>
+      <a th:href="@{/notes/ui/modifier/{id}(id=${note.id})}">Modifier</a>
       &nbsp;|&nbsp;
-      <a th:href="@{'/notes/ui/supprimer/' + ${note.id}}">Supprimer</a>
+      <a th:href="@{/notes/ui/supprimer/{id}(id=${note.id})}">Supprimer</a>
     </td>
   </tr>
   </tbody>
-</table>
 
-</body>
+</table></body>
 </html>

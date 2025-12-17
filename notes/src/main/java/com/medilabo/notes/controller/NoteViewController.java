@@ -29,6 +29,13 @@ public class NoteViewController {
         return "note-liste";
     }
 
+    //route qd URL sans ID
+    @GetMapping({"/patient", "/patient/"})
+    public String patientSansId() {
+        return "redirect:/patients/ui/liste";
+    }
+
+
     @GetMapping("/ajouter/{patientId}")
     public String afficherFormAjout(@PathVariable Long patientId, Model model) {
         Note note = new Note();
@@ -46,14 +53,17 @@ public class NoteViewController {
         note.setPatientId(patientId);
         noteService.save(note);
 
-        return "redirect:/notes/ui/patient/" + patientId;
+        return "redirect:http://localhost:8090/notes/ui/patient/" + patientId;
     }
 
     //modifier les notes
     @GetMapping("/modifier/{id}")
     public String afficherFormModifier(@PathVariable String id, Model model) {
 
-        Note note = noteService.getNoteById(id); // méthode à avoir dans le service
+        Note note = noteService.getNoteById(id);
+        if (note == null) {
+            return "redirect:/patients/ui/liste";
+        }
         Long patientId = note.getPatientId();
 
         model.addAttribute("patientId", patientId);
@@ -64,18 +74,36 @@ public class NoteViewController {
 
     @PostMapping("/modifier/{id}")
     public String traiterModification(@PathVariable String id,
-                                      @ModelAttribute("note") Note note) {
+                                      @ModelAttribute("note") Note form) {
 
-        // on garde l’id de la note
-        note.setId(id);
+        Note existing = noteService.getNoteById(id);
+        if (existing == null) {
+            return "redirect:/patients/ui/liste";
+        }
 
-        // patientId arrive du formulaire (champ caché)
-        Long patientId = note.getPatientId();
+        existing.setNote(form.getNote());
+        noteService.save(existing);
 
-        noteService.save(note);
-
-        return "redirect:/notes/ui/patient/" + patientId;
+        Long patientId = existing.getPatientId();
+        return "redirect:http://localhost:8090/notes/ui/patient/" + patientId;
     }
+
+    // supprimer une note
+
+    @GetMapping("/supprimer/{id}")
+    public String traiterSuppression(@PathVariable String id) {
+
+        Note note = noteService.getNoteById(id);
+        if (note == null) {
+            return "redirect:/patients/ui/liste";
+        }
+
+        Long patientId = note.getPatientId();
+        noteService.deleteNote(id);
+
+        return "redirect:http://localhost:8090/notes/ui/patient/" + patientId;
+    }
+//return "redirect:/notes/ui/patient/" + patientId;
 }
 
 

@@ -8,3 +8,6 @@ spring:
       host: mongodb
       port: 27017
       database: notesdb
+
+server:
+  forward-headers-strategy: framework

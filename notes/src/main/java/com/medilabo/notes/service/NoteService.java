@@ -58,7 +58,10 @@ public class NoteService {
         return existing;
     }
 
-   /* return "redirect:/notes/list";
+    public void deleteById(Long id) {
+    }
+
+    /* return "redirect:/notes/list";
    */
 
 

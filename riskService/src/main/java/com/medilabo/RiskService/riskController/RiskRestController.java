@@ -14,6 +14,11 @@ public class RiskRestController {
             this.riskService = riskService;
         }
 
+        @GetMapping({"", "/"})
+        public ResponseEntity<String> home() {
+            return ResponseEntity.ok("Risk service is UP. Use http://localhost:8090/patients/ui/liste to reach risk according patient.");
+        }
+
         // GET /risk/{patientId}
         @GetMapping("/{patientId}")
         public ResponseEntity<RiskReportDto> getRisk(@PathVariable Long patientId) {

@@ -13,7 +13,7 @@ public class NoteClient {
 
     private final RestTemplate restTemplate;
 
-    private static final String BASE_URL = "http://noteservice:8082/notes";
+    private static final String BASE_URL = "http://noteservice:8082/notes/patient/";
 
     public NoteClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;

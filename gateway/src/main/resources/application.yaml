@@ -1,28 +1,51 @@
 server:
   port: 8090
+  forward-headers-strategy: framework
 
 spring:
   application:
     name: gateway
 
+  security:
+    user:
+      name: user
+      password: root
+
   cloud:
     gateway:
-      routes:
+      server:
+        webflux:
+          forwarded:
+            enabled: true
+          default-filters:
+            - PreserveHostHeader
 
-        # PATIENT SERVICE
-        - id: patientservice
-          uri: http://patientservice:8081
-          predicates:
-            - Path=/patients/**
+          routes:
+            - id: home
+              uri: http://frontservice:8080
+              predicates:
+                - Path=/
+              filters:
+                - SetPath=/
 
-        # NOTES SERVICE
-        - id: noteservice
-          uri: http://noteservice:8082
-          predicates:
-            - Path=/notes/**
+            - id: patientservice
+              uri: http://patientservice:8081
+              predicates:
+                - Path=/patients/**
 
-        # RISK SERVICE
-        - id: riskservice
-          uri: http://riskservice:8083
-          predicates:
-            - Path=/riskService/**
+            - id: noteservice
+              uri: http://noteservice:8082
+              predicates:
+                - Path=/notes/**
+
+            - id: riskservice
+              uri: http://riskservice:8083
+              predicates:
+                - Path=/risk/**
+
+            - id: frontservice-assets
+              uri: http://frontservice:8080
+              predicates:
+                - Path=/css/**,/js/**,/images/**,/webjars/**,/favicon.ico
+
+

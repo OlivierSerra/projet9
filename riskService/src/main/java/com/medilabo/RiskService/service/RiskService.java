@@ -4,6 +4,7 @@ import com.medilabo.RiskService.client.NoteClient;
 import com.medilabo.RiskService.client.PatientClient;
 import com.medilabo.RiskService.dto.*;
 import com.medilabo.RiskService.model.RiskLevel;
+import com.medilabo.RiskService.dto.RiskReportDto;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

@@ -1,5 +1,7 @@
 package com.medilabo.patient.controller;
 
+import com.medilabo.patient.service.RiskClient;
+import com.medilabo.patient.dto.RiskReportDto;
 import com.medilabo.patient.model.PatientModel;
 import com.medilabo.patient.service.PatientService;
 import org.springframework.stereotype.Controller;
@@ -13,9 +15,11 @@ import java.util.List;
 public class PatientViewController {
 
     private final PatientService patientService;
+    private final RiskClient riskClient;
 
-    public PatientViewController(PatientService patientService) {
+    public PatientViewController(PatientService patientService, RiskClient riskClient) {
         this.patientService = patientService;
+        this.riskClient = riskClient;
     }
 
     // =========================
@@ -27,7 +31,6 @@ public class PatientViewController {
         model.addAttribute("patients", patients);
         return "patients-liste";
     }
-
     // =========================
     // AJOUTER
     // =========================
@@ -39,7 +42,7 @@ public class PatientViewController {
 
     @PostMapping("/ajouter")
     public String traiterAjout(@ModelAttribute("patient") PatientModel patient) {
-        patientService.save(patient);
+        PatientModel saved = patientService.save(patient);
         return "redirect:/patients/ui/liste";
     }
 
@@ -50,7 +53,6 @@ public class PatientViewController {
     public String afficherFormModification(@PathVariable Long id, Model model) {
         PatientModel patient = patientService.findById(id);
         if (patient == null) {
-            // plus tard on pourra gérer proprement l'erreur
             return "redirect:/patients/ui/liste";
         }
         model.addAttribute("patient", patient);
@@ -84,5 +86,21 @@ public class PatientViewController {
         return "redirect:/patients/ui/liste";
     }
 
+    //Afficher le détail des patients
+
+    @GetMapping("/detail/{id}")
+    public String afficherDetailPatient(@PathVariable Long id, Model model) {
+        PatientModel patient = patientService.findById(id);
+        if (patient == null) {
+            return "redirect:/patients/ui/liste";
+        }
+
+        RiskReportDto risk = riskClient.getRiskForPatient(id);
+
+        model.addAttribute("patient", patient);
+        model.addAttribute("risk", risk);
+
+        return "patient-detail";
+    }
 
 }

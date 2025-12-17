@@ -8,30 +8,19 @@
 
 <h1>Ajouter une note</h1>
 
-<nav>
-  <a th:href="@{/notes/ui/ajouter}">Ajouter</a> |
-  <a th:href="@{/notes/ui/modifier}">Modifier</a> |
-  <a th:href="@{/notes/ui/supprimer}">Supprimer</a>
-</nav>
+<p>
+  <a th:href="@{/notes/ui/patient/{patientId}(patientId=${patientId})}">⬅ Retour aux notes</a>
+</p>
 
-<hr>
+<form th:action="@{/notes/ui/ajouter/{patientId}(patientId=${patientId})}"
+      th:object="${note}"
+      method="post">
 
-<p th:if="${message}" th:text="${message}"></p>
-
-<form th:action="@{/notes/ui/ajouter}" method="post">
-  <div>
-    <label for="patientId">Patient ID :</label>
-    <input type="number" name="patientId" id="patientId" required>
-  </div>
-
-  <div>
-    <label for="patient">Nom du patient :</label>
-    <input type="text" name="patient" id="patient" required>
-  </div>
+  <input type="hidden" th:field="*{patientId}"/>
 
   <div>
     <label for="note">Note :</label><br>
-    <textarea name="note" id="note" rows="5" cols="50" required></textarea>
+    <textarea th:field="*{note}" id="note" rows="5" cols="50" required></textarea>
   </div>
 
   <br>
